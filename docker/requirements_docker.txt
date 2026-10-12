@@ -1,0 +1,7 @@
+transformers==5.13.0
+gradio
+timm==1.0.9
+einops==0.6.1
+accelerate==1.4.0
+modelscope
+flash-linear-attention[cuda]

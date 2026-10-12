@@ -137,11 +137,66 @@ VLX-Seek 1.5 规划了 0.6B、3B 和 10B 三种模型规模。本仓库开源 **
 
 ## 安装
 
+### 本地安装
+
 ```bash
 git clone https://github.com/om-ai-lab/VLX-Seek.git
 cd VLX-Seek
 pip install -r requirements.txt
 ```
+
+### NVIDIA x86（如 A100）Docker 推理
+
+支持在搭载 A100 等 NVIDIA GPU 的 Linux x86_64 主机上使用 Docker 推理。请先在宿主机安装 NVIDIA 驱动、Docker 及 NVIDIA Container Toolkit。镜像已包含推理依赖，无需在宿主机安装 Python 环境。
+
+克隆仓库，以下宿主机命令均在仓库根目录执行：
+
+```bash
+git clone https://github.com/om-ai-lab/VLX-Seek.git
+cd VLX-Seek
+```
+
+任选一种方式准备镜像：
+
+- 使用提供的 Dockerfile 本地构建：
+
+  ```bash
+  docker build -f docker/Dockerfile.nvidia_x86 -t vlx-seek:base .
+  ```
+
+- 直接使用我们提供的预构建镜像：
+
+  ```bash
+  docker pull registry.linker.cc/vlx/vlx-seek:base
+  ```
+
+通过 `docker run` 启动容器并进入容器。以下示例使用宿主机 GPU `0`，可修改 `--gpus device=0` 选择其他 GPU。如使用本地构建的镜像，将下方的 `registry.linker.cc/vlx/vlx-seek:base` 替换为 `vlx-seek:base`。
+
+```bash
+docker run -d --name seek-dev \
+  --gpus device=0 \
+  --shm-size=40g \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  registry.linker.cc/vlx/vlx-seek:base \
+  sleep infinity
+docker exec -it seek-dev bash
+```
+
+在容器内执行推理：
+
+```bash
+python inference.py \
+  --model-path omlab/VLX-Seek-1.5-10B \
+  --image-path demo/demo_image.jpg \
+  --task detection \
+  --text "橘子; 苹果" \
+  --lang zh
+```
+
+首次运行会从 Hugging Face 下载模型权重，并在需要时下载候选区域检测器权重。如使用本地权重，将模型路径改为 `--model-path resources/VLX-Seek-1.5-10B`。上述命令将仓库挂载到 `/workspace` 并将其设为工作目录，因此 `resources/` 下的本地权重及 `demo/` 下生成的结果均可在宿主机访问。
+
+更多说明请参阅 [Docker 推理指南](docs/inference_zh.md#nvidia-x86如-a100docker-推理)。
 
 ## 模型权重
 

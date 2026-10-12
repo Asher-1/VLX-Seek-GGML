@@ -1,0 +1,14 @@
+FROM nvcr.io/nvidia/pytorch:26.08-py3
+
+COPY docker/requirements_docker.txt /tmp/requirements_docker.txt
+
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+RUN pip install --no-cache-dir -r /tmp/requirements_docker.txt
+
+RUN wget https://airesources.oss-cn-hangzhou.aliyuncs.com/atom/causal_conv1d-1.7.0-cp312-cp312-linux_x86_64.whl -O /tmp/causal_conv1d-1.7.0-cp312-cp312-linux_x86_64.whl && \
+    pip install /tmp/causal_conv1d-1.7.0-cp312-cp312-linux_x86_64.whl && \
+    rm -f /tmp/causal_conv1d-1.7.0-cp312-cp312-linux_x86_64.whl
+
+COPY . .
+

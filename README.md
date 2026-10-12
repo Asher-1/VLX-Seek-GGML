@@ -140,11 +140,65 @@ See the [VLX-Seek 1.5 blog](https://om-ai-lab.github.io/2026_07_06_vlx_seek_1_5_
 
 ## Installation
 
+### Local Installation
+
 ```bash
 git clone https://github.com/om-ai-lab/VLX-Seek.git
 cd VLX-Seek
 pip install -r requirements.txt
 ```
+
+### Docker Inference on NVIDIA x86 (e.g. A100)
+
+Docker support is available for Linux x86_64 hosts with NVIDIA GPUs such as A100. Install the NVIDIA driver, Docker, and NVIDIA Container Toolkit on the host first. The image includes the inference dependencies, so no host-side Python installation is needed.
+
+Clone the repository and run the following commands from its root directory:
+
+```bash
+git clone https://github.com/om-ai-lab/VLX-Seek.git
+cd VLX-Seek
+```
+
+Choose one of the following image sources:
+
+- Build locally with the provided Dockerfile:
+
+  ```bash
+  docker build -f docker/Dockerfile.nvidia_x86 -t vlx-seek:base .
+  ```
+
+- Use our prebuilt image:
+
+  ```bash
+  docker pull registry.linker.cc/vlx/vlx-seek:base
+  ```
+
+Start the container with `docker run`, then enter it. This example uses host GPU `0`; change `--gpus device=0` to select another GPU. If you built the image locally, replace `registry.linker.cc/vlx/vlx-seek:base` below with `vlx-seek:base`.
+
+```bash
+docker run -d --name seek-dev \
+  --gpus device=0 \
+  --shm-size=40g \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  registry.linker.cc/vlx/vlx-seek:base \
+  sleep infinity
+docker exec -it seek-dev bash
+```
+
+Run inference inside the container:
+
+```bash
+python inference.py \
+  --model-path omlab/VLX-Seek-1.5-10B \
+  --image-path demo/demo_image.jpg \
+  --task detection \
+  --text "orange; apple"
+```
+
+The first run downloads the model weights from Hugging Face and, if needed, the region detector checkpoint. For local weights, use `--model-path resources/VLX-Seek-1.5-10B`. The command mounts the repository at `/workspace` and sets it as the working directory, so local weights in `resources/` and generated results in `demo/` are accessible on the host.
+
+See the [Docker inference guide](docs/inference.md#docker-inference-on-nvidia-x86-eg-a100) for more details.
 
 
 ## Model Weights

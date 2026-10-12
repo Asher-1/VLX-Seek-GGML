@@ -1,3 +1,6 @@
 .agents
 .codex
 .vscode
+causal-conv1d/
+resources/
+__pycache__/

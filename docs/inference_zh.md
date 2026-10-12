@@ -8,7 +8,7 @@
 
 当前提供的推理流程需要：
 
-- `requirements.txt` 中固定的依赖
+- 推理依赖，可通过 `requirements.txt` 在本地安装，或使用下文提供的 Docker 镜像
 - VLX-Seek 1.5-10B 模型权重：[omlab/VLX-Seek-1.5-10B](https://huggingface.co/omlab/VLX-Seek-1.5-10B)
 - WeDetect-Base-Uni 模型权重：[WeDetect](https://huggingface.co/fushh7/WeDetect)
 
@@ -41,6 +41,65 @@ The fast path is not available because one of the required library is not instal
 ```
 
 安装 [flash-linear-attention](https://github.com/fla-org/flash-linear-attention#installation) 和 [causal-conv1d](https://github.com/Dao-AILab/causal-conv1d) 可以启用快速路径，从而提升推理速度。
+
+## NVIDIA x86（如 A100）Docker 推理
+
+支持在搭载 A100 等 NVIDIA GPU 的 Linux x86_64 主机上使用 Docker 推理。宿主机需要安装 NVIDIA 驱动、Docker，并配置 NVIDIA Container Toolkit 以供容器访问 GPU。镜像已包含推理依赖，以及 `flash-linear-attention` 和 `causal-conv1d` 加速库。
+
+### 准备镜像
+
+如果尚未克隆仓库，先执行以下命令。后续宿主机命令均在仓库根目录运行：
+
+```bash
+git clone https://github.com/om-ai-lab/VLX-Seek.git
+cd VLX-Seek
+```
+
+任选一种方式准备镜像：
+
+- 使用 [Dockerfile.nvidia_x86](../docker/Dockerfile.nvidia_x86) 构建：
+
+  ```bash
+  docker build -f docker/Dockerfile.nvidia_x86 -t vlx-seek:base .
+  ```
+
+- 拉取我们提供的预构建镜像：
+
+  ```bash
+  docker pull registry.linker.cc/vlx/vlx-seek:base
+  ```
+
+### 启动并进入容器
+
+在仓库根目录执行以下命令，通过 `--gpus device=0` 选择宿主机 GPU `0`，可修改编号使用其他 GPU。如使用本地构建的镜像，将 `registry.linker.cc/vlx/vlx-seek:base` 替换为 `vlx-seek:base`。
+
+```bash
+docker run -d --name seek-dev \
+  --gpus device=0 \
+  --shm-size=40g \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  registry.linker.cc/vlx/vlx-seek:base \
+  sleep infinity
+docker exec -it seek-dev bash
+```
+
+上述命令将仓库挂载到 `/workspace` 并将其设为工作目录，宿主机上的源码、本地权重、输入图片和保存的结果均可在容器内访问。容器会持续运行，后续可通过 `docker exec -it seek-dev bash` 再次进入。
+
+### 在容器内执行推理
+
+```bash
+python inference.py \
+  --model-path omlab/VLX-Seek-1.5-10B \
+  --image-path demo/demo_image.jpg \
+  --task detection \
+  --text "橘子; 苹果" \
+  --lang zh
+```
+
+首次运行需要访问 Hugging Face，以下载主模型，并在需要候选框时下载 `resources/wedetect_base_uni.pth`。如使用本地主模型权重，将其放在宿主机仓库的 `resources/VLX-Seek-1.5-10B/` 目录，再将参数改为 `--model-path resources/VLX-Seek-1.5-10B`。Docker 镜像不包含模型权重。
+
+结果以 JSON 打印，示例可视化保存到宿主机挂载目录中的 `demo/demo_image_result.png`。下文其他命令行示例和 Python API 也可在该容器的 `/workspace` 目录下运行。
 
 ## 候选区域
 

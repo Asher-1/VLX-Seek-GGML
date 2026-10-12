@@ -8,7 +8,7 @@ This guide covers command-line and Python inference for VLX-Seek 1.5-10B. For th
 
 The provided pipeline currently requires:
 
-- the packages pinned in `requirements.txt`;
+- inference dependencies, installed locally with `requirements.txt` or provided by the Docker image described below;
 - the VLX-Seek 1.5-10B checkpoint from [omlab/VLX-Seek-1.5-10B](https://huggingface.co/omlab/VLX-Seek-1.5-10B);
 - the region detector checkpoint from [WeDetect](https://huggingface.co/fushh7/WeDetect)
 
@@ -41,6 +41,64 @@ The fast path is not available because one of the required library is not instal
 ```
 
 Installing [flash-linear-attention](https://github.com/fla-org/flash-linear-attention#installation) and [causal-conv1d](https://github.com/Dao-AILab/causal-conv1d) enables the fast path and speeds up inference.
+
+## Docker Inference on NVIDIA x86 (e.g. A100)
+
+Use the provided Docker environment on a Linux x86_64 host with an NVIDIA GPU such as A100. The host needs an NVIDIA driver, Docker, and NVIDIA Container Toolkit configured for GPU containers. The image includes the inference dependencies, including `flash-linear-attention` and `causal-conv1d`.
+
+### Prepare the Image
+
+Clone the repository if needed, then run all host-side commands from its root directory:
+
+```bash
+git clone https://github.com/om-ai-lab/VLX-Seek.git
+cd VLX-Seek
+```
+
+Choose one of the following:
+
+- Build with [Dockerfile.nvidia_x86](../docker/Dockerfile.nvidia_x86):
+
+  ```bash
+  docker build -f docker/Dockerfile.nvidia_x86 -t vlx-seek:base .
+  ```
+
+- Pull our prebuilt image:
+
+  ```bash
+  docker pull registry.linker.cc/vlx/vlx-seek:base
+  ```
+
+### Start and Enter the Container
+
+Run the following command from the repository root. It selects host GPU `0` through `--gpus device=0`; change the index to use another GPU. For a locally built image, replace `registry.linker.cc/vlx/vlx-seek:base` with `vlx-seek:base`.
+
+```bash
+docker run -d --name seek-dev \
+  --gpus device=0 \
+  --shm-size=40g \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  registry.linker.cc/vlx/vlx-seek:base \
+  sleep infinity
+docker exec -it seek-dev bash
+```
+
+The command mounts the repository at `/workspace` and sets it as the working directory, making your host-side source code, local weights, input images, and saved results available inside the container. The container stays running so you can enter it again with `docker exec -it seek-dev bash`.
+
+### Run Inference Inside the Container
+
+```bash
+python inference.py \
+  --model-path omlab/VLX-Seek-1.5-10B \
+  --image-path demo/demo_image.jpg \
+  --task detection \
+  --text "orange; apple"
+```
+
+The first run requires access to Hugging Face to download the main model and, when proposals are needed, `resources/wedetect_base_uni.pth`. To use a local main-model checkpoint, place it in the host repository's `resources/VLX-Seek-1.5-10B/` directory and use `--model-path resources/VLX-Seek-1.5-10B` instead. The Docker image does not bundle model weights.
+
+Results are printed as JSON, and the example visualization is saved to `demo/demo_image_result.png` in the mounted host repository. You can run the other CLI examples and Python API below from `/workspace` in the same container.
 
 ## Region Proposals
 
