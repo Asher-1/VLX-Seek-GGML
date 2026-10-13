@@ -145,117 +145,13 @@ cd VLX-Seek
 pip install -r requirements.txt
 ```
 
-### NVIDIA x86（如 A100）Docker 推理
+### Docker 安装
 
-支持在搭载 A100 等 NVIDIA GPU 的 Linux x86_64 主机上使用 Docker 推理。请先在宿主机安装 NVIDIA 驱动、Docker 及 NVIDIA Container Toolkit。镜像已包含推理依赖，无需在宿主机安装 Python 环境。
+驱动要求、各平台镜像及 `docker run` 启动命令请参阅以下指南：
 
-宿主机 NVIDIA 驱动要求：
-
-| x86 GPU 类型 | 最低 Driver Version |
-| --- | --- |
-| A100 等数据中心卡 | 535 及以上 |
-| RTX 4090 等消费级卡 | 580 及以上 |
-
-克隆仓库，以下宿主机命令均在仓库根目录执行：
-
-```bash
-git clone https://github.com/om-ai-lab/VLX-Seek.git
-cd VLX-Seek
-```
-
-任选一种方式准备镜像：
-
-- 使用提供的 Dockerfile 本地构建：
-
-  ```bash
-  docker build -f docker/Dockerfile.nvidia_x86 -t vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64 .
-  ```
-
-- 直接使用我们提供的预构建镜像：
-
-  ```bash
-  docker pull registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64
-  ```
-
-通过 `docker run` 启动容器并进入容器。以下示例使用宿主机 GPU `0`，可修改 `--gpus device=0` 选择其他 GPU。如使用本地构建的镜像，将下方的 `registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64` 替换为 `vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64`。
-
-```bash
-docker run -d --name seek-dev \
-  --gpus device=0 \
-  --shm-size=40g \
-  -v "$PWD:/workspace" \
-  -w /workspace \
-  registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64 \
-  sleep infinity
-docker exec -it seek-dev bash
-```
-
-在容器内执行推理：
-
-```bash
-python inference.py \
-  --model-path omlab/VLX-Seek-1.5-10B \
-  --image-path demo/demo_image.jpg \
-  --task detection \
-  --text "橘子; 苹果" \
-  --lang zh
-```
-
-首次运行会从 Hugging Face 下载模型权重，并在需要时下载候选区域检测器权重。如使用本地权重，将模型路径改为 `--model-path resources/VLX-Seek-1.5-10B`。上述命令将仓库挂载到 `/workspace` 并将其设为工作目录，因此 `resources/` 下的本地权重及 `demo/` 下生成的结果均可在宿主机访问。
-
-更多说明请参阅 [Docker 推理指南](docs/inference_zh.md#nvidia-x86如-a100docker-推理)。
-
-### T5000 和 GB10（aarch64）Docker 推理
-
-宿主机平台要求：
-
-| 平台 | 要求 |
-| --- | --- |
-| Jetson 系列（T5000） | JetPack 7.0 及以上，建议使用 JetPack 7.2 |
-| NVIDIA Spark GB10 | NVIDIA Driver Version 580 及以上 |
-
-请先在宿主机安装 NVIDIA 驱动、Docker 及 NVIDIA Container Toolkit，并配置 `nvidia` runtime。根据平台选择对应的预构建镜像：
-
-| 平台 | 镜像 |
-| --- | --- |
-| T5000 | `registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-t5000-aarch64` |
-| GB10 | `registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-gb10-aarch64` |
-
-#### T5000 Docker Run
-
-在仓库根目录启动并进入容器：
-
-```bash
-docker run -d --name seek-dev \
-  --runtime=nvidia \
-  --restart=always \
-  --shm-size=40g \
-  -p 1233:8000 \
-  -v "$PWD:/workspace" \
-  -w /workspace \
-  registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-t5000-aarch64 \
-  sleep infinity
-docker exec -it seek-dev bash
-```
-
-#### GB10 Docker Run
-
-在仓库根目录启动并进入容器：
-
-```bash
-docker run -d --name seek-dev \
-  --runtime=nvidia \
-  --restart=always \
-  --shm-size=40g \
-  -p 1233:8000 \
-  -v "$PWD:/workspace" \
-  -w /workspace \
-  registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-gb10-aarch64 \
-  sleep infinity
-docker exec -it seek-dev bash
-```
-
-进入容器后，在 `/workspace` 下执行上文的推理命令。两条命令均使用容器名 `seek-dev`，切换平台前请先停止并移除同名容器。更多说明请参阅 [T5000 和 GB10 Docker 推理指南](docs/inference_zh.md#t5000-和-gb10aarch64docker-推理)。
+- [NVIDIA x86 显卡（A100、RTX 4090 等）](docs/inference_zh.md#nvidia-x86如-a100docker-推理)
+- [Jetson T5000](docs/inference_zh.md#t5000-docker-run)
+- [NVIDIA Spark GB10](docs/inference_zh.md#gb10-docker-run)
 
 ## 模型权重
 
