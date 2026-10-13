@@ -46,6 +46,13 @@ The fast path is not available because one of the required library is not instal
 
 支持在搭载 A100 等 NVIDIA GPU 的 Linux x86_64 主机上使用 Docker 推理。宿主机需要安装 NVIDIA 驱动、Docker，并配置 NVIDIA Container Toolkit 以供容器访问 GPU。镜像已包含推理依赖，以及 `flash-linear-attention` 和 `causal-conv1d` 加速库。
 
+宿主机 NVIDIA 驱动要求：
+
+| x86 GPU 类型 | 最低 Driver Version |
+| --- | --- |
+| A100 等数据中心卡 | 535 及以上 |
+| RTX 4090 等消费级卡 | 580 及以上 |
+
 ### 准备镜像
 
 如果尚未克隆仓库，先执行以下命令。后续宿主机命令均在仓库根目录运行：
@@ -60,18 +67,18 @@ cd VLX-Seek
 - 使用 [Dockerfile.nvidia_x86](../docker/Dockerfile.nvidia_x86) 构建：
 
   ```bash
-  docker build -f docker/Dockerfile.nvidia_x86 -t vlx-seek:base .
+  docker build -f docker/Dockerfile.nvidia_x86 -t vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64 .
   ```
 
 - 拉取我们提供的预构建镜像：
 
   ```bash
-  docker pull registry.linker.cc/vlx/vlx-seek:base
+  docker pull registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64
   ```
 
 ### 启动并进入容器
 
-在仓库根目录执行以下命令，通过 `--gpus device=0` 选择宿主机 GPU `0`，可修改编号使用其他 GPU。如使用本地构建的镜像，将 `registry.linker.cc/vlx/vlx-seek:base` 替换为 `vlx-seek:base`。
+在仓库根目录执行以下命令，通过 `--gpus device=0` 选择宿主机 GPU `0`，可修改编号使用其他 GPU。如使用本地构建的镜像，将 `registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64` 替换为 `vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64`。
 
 ```bash
 docker run -d --name seek-dev \
@@ -79,7 +86,7 @@ docker run -d --name seek-dev \
   --shm-size=40g \
   -v "$PWD:/workspace" \
   -w /workspace \
-  registry.linker.cc/vlx/vlx-seek:base \
+  registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64 \
   sleep infinity
 docker exec -it seek-dev bash
 ```
@@ -100,6 +107,62 @@ python inference.py \
 首次运行需要访问 Hugging Face，以下载主模型，并在需要候选框时下载 `resources/wedetect_base_uni.pth`。如使用本地主模型权重，将其放在宿主机仓库的 `resources/VLX-Seek-1.5-10B/` 目录，再将参数改为 `--model-path resources/VLX-Seek-1.5-10B`。Docker 镜像不包含模型权重。
 
 结果以 JSON 打印，示例可视化保存到宿主机挂载目录中的 `demo/demo_image_result.png`。下文其他命令行示例和 Python API 也可在该容器的 `/workspace` 目录下运行。
+
+## T5000 和 GB10（aarch64）Docker 推理
+
+宿主机平台要求：
+
+| 平台 | 要求 |
+| --- | --- |
+| Jetson 系列（T5000） | JetPack 7.0 及以上，建议使用 JetPack 7.2 |
+| NVIDIA Spark GB10 | NVIDIA Driver Version 580 及以上 |
+
+根据 aarch64 平台选择对应的预构建镜像：
+
+| 平台 | 镜像 |
+| --- | --- |
+| T5000 | `registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-t5000-aarch64` |
+| GB10 | `registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-gb10-aarch64` |
+
+宿主机需要安装 NVIDIA 驱动、Docker 及 NVIDIA Container Toolkit，并配置 `nvidia` runtime。按上文克隆仓库，以下宿主机命令均在仓库根目录运行。
+
+### T5000 Docker Run
+
+在仓库根目录启动并进入容器：
+
+```bash
+docker run -d --name seek-dev \
+  --runtime=nvidia \
+  --restart=always \
+  --shm-size=40g \
+  -p 1233:8000 \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-t5000-aarch64 \
+  sleep infinity
+docker exec -it seek-dev bash
+```
+
+### GB10 Docker Run
+
+在仓库根目录启动并进入容器：
+
+```bash
+docker run -d --name seek-dev \
+  --runtime=nvidia \
+  --restart=always \
+  --shm-size=40g \
+  -p 1233:8000 \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-gb10-aarch64 \
+  sleep infinity
+docker exec -it seek-dev bash
+```
+
+本地没有镜像时，`docker run` 会自动拉取对应镜像。两条命令均将仓库挂载到 `/workspace`，将容器端口 `8000` 映射到宿主机端口 `1233`，并使用容器名 `seek-dev`。切换平台前请先停止并移除同名容器。
+
+进入容器后，在 `/workspace` 下执行 NVIDIA x86 小节中的推理命令。模型下载、本地权重路径及结果路径的使用方式与上文相同。
 
 ## 候选区域
 
