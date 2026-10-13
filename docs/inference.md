@@ -8,7 +8,7 @@ This guide covers command-line and Python inference for VLX-Seek 1.5-10B. For th
 
 The provided pipeline currently requires:
 
-- the packages pinned in `requirements.txt`;
+- inference dependencies, installed locally with `requirements.txt` or provided by the Docker image described below;
 - the VLX-Seek 1.5-10B checkpoint from [omlab/VLX-Seek-1.5-10B](https://huggingface.co/omlab/VLX-Seek-1.5-10B);
 - the region detector checkpoint from [WeDetect](https://huggingface.co/fushh7/WeDetect)
 
@@ -41,6 +41,127 @@ The fast path is not available because one of the required library is not instal
 ```
 
 Installing [flash-linear-attention](https://github.com/fla-org/flash-linear-attention#installation) and [causal-conv1d](https://github.com/Dao-AILab/causal-conv1d) enables the fast path and speeds up inference.
+
+## Docker Inference on NVIDIA x86 (e.g. A100)
+
+Use the provided Docker environment on a Linux x86_64 host with an NVIDIA GPU such as A100. The host needs an NVIDIA driver, Docker, and NVIDIA Container Toolkit configured for GPU containers. The image includes the inference dependencies, including `flash-linear-attention` and `causal-conv1d`.
+
+Host NVIDIA driver requirements:
+
+| x86 GPU type | Minimum Driver Version |
+| --- | --- |
+| Data center GPUs such as A100 | 535 or later |
+| Consumer GPUs such as RTX 4090 | 580 or later |
+
+### Prepare the Image
+
+Clone the repository if needed, then run all host-side commands from its root directory:
+
+```bash
+git clone https://github.com/om-ai-lab/VLX-Seek.git
+cd VLX-Seek
+```
+
+Choose one of the following:
+
+- Build with [Dockerfile.nvidia_x86](../docker/Dockerfile.nvidia_x86):
+
+  ```bash
+  docker build -f docker/Dockerfile.nvidia_x86 -t vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64 .
+  ```
+
+- Pull our prebuilt image:
+
+  ```bash
+  docker pull registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64
+  ```
+
+### Start and Enter the Container
+
+Run the following command from the repository root. It selects host GPU `0` through `--gpus device=0`; change the index to use another GPU. For a locally built image, replace `registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64` with `vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64`.
+
+```bash
+docker run -d --name seek-dev \
+  --gpus device=0 \
+  --shm-size=40g \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-nvidia-x86_64 \
+  sleep infinity
+docker exec -it seek-dev bash
+```
+
+The command mounts the repository at `/workspace` and sets it as the working directory, making your host-side source code, local weights, input images, and saved results available inside the container. The container stays running so you can enter it again with `docker exec -it seek-dev bash`.
+
+### Run Inference Inside the Container
+
+```bash
+python inference.py \
+  --model-path omlab/VLX-Seek-1.5-10B \
+  --image-path demo/demo_image.jpg \
+  --task detection \
+  --text "orange; apple"
+```
+
+The first run requires access to Hugging Face to download the main model and, when proposals are needed, `resources/wedetect_base_uni.pth`. To use a local main-model checkpoint, place it in the host repository's `resources/VLX-Seek-1.5-10B/` directory and use `--model-path resources/VLX-Seek-1.5-10B` instead. The Docker image does not bundle model weights.
+
+Results are printed as JSON, and the example visualization is saved to `demo/demo_image_result.png` in the mounted host repository. You can run the other CLI examples and Python API below from `/workspace` in the same container.
+
+## Docker Inference on T5000 and GB10 (aarch64)
+
+Host platform requirements:
+
+| Platform | Requirement |
+| --- | --- |
+| Jetson series (T5000) | JetPack 7.0 or later; JetPack 7.2 recommended |
+| NVIDIA Spark GB10 | NVIDIA Driver Version 580 or later |
+
+Use the prebuilt image matching your aarch64 platform:
+
+| Platform | Image |
+| --- | --- |
+| T5000 | `registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-t5000-aarch64` |
+| GB10 | `registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-gb10-aarch64` |
+
+The host needs the NVIDIA driver, Docker, and NVIDIA Container Toolkit with the `nvidia` runtime configured. Clone the repository as shown above and run all host-side commands from its root directory.
+
+### T5000 Docker Run
+
+Run from the repository root to start and enter the container:
+
+```bash
+docker run -d --name seek-dev \
+  --runtime=nvidia \
+  --restart=always \
+  --shm-size=40g \
+  -p 1233:8000 \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-t5000-aarch64 \
+  sleep infinity
+docker exec -it seek-dev bash
+```
+
+### GB10 Docker Run
+
+Run from the repository root to start and enter the container:
+
+```bash
+docker run -d --name seek-dev \
+  --runtime=nvidia \
+  --restart=always \
+  --shm-size=40g \
+  -p 1233:8000 \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  registry.linker.cc/vlx/vlx-seek:py3.12-ubuntu24.04-gb10-aarch64 \
+  sleep infinity
+docker exec -it seek-dev bash
+```
+
+`docker run` pulls the selected image if it is not available locally. Both commands mount the repository at `/workspace`, publish container port `8000` on host port `1233`, and use the container name `seek-dev`. Stop and remove an existing container with that name before switching platforms.
+
+Run the inference command in the NVIDIA x86 section from `/workspace` inside the container. Model downloads, local weight paths, and output paths work the same way as described there.
 
 ## Region Proposals
 
