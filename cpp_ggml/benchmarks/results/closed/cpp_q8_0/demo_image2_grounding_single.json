@@ -1,0 +1,15 @@
+{
+  "answer": "<ground>the person in a white shirt</ground><objects><obj12></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj12>",
+      "xmin": 761.4934692382812,
+      "ymin": 228.75265502929688,
+      "xmax": 875.5050659179688,
+      "ymax": 669.7219848632812,
+      "label": "the person in a white shirt"
+    }
+  ],
+  "prompt_tokens": 961,
+  "completion_tokens": 12
+}

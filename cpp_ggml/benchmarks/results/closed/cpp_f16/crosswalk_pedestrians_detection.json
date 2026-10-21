@@ -1,0 +1,23 @@
+{
+  "answer": "<ground>the person riding a bicycle</ground><objects><obj5><obj31></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj5>",
+      "xmin": 645.5346069335938,
+      "ymin": 146.38754272460938,
+      "xmax": 684.5460815429688,
+      "ymax": 184.66140747070312,
+      "label": "the person riding a bicycle"
+    },
+    {
+      "object_index": "<obj31>",
+      "xmin": 809.4476318359375,
+      "ymin": 199.55682373046875,
+      "xmax": 843.036376953125,
+      "ymax": 238.22161865234375,
+      "label": "the person riding a bicycle"
+    }
+  ],
+  "prompt_tokens": 1224,
+  "completion_tokens": 12
+}

@@ -1,0 +1,13 @@
+{
+  "ttft_ms": 126.7,
+  "stages": {
+    "prep": 11.6,
+    "mmproj": 24.8,
+    "radio": 10.9,
+    "fpn": 2.8,
+    "hfre": 4.2,
+    "proj": 0.1,
+    "prefill": 72.3
+  },
+  "source": "live instrumented run (register_forward hooks, timeline method)"
+}

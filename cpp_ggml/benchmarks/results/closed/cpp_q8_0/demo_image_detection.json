@@ -1,0 +1,63 @@
+{
+  "answer": "<ground>orange</ground><objects><obj6><obj3><obj2><obj5><obj4></objects>\n<ground>apple</ground><objects><obj1><obj0></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj6>",
+      "xmin": 13.09492015838623,
+      "ymin": 99.78089904785156,
+      "xmax": 141.14939880371094,
+      "ymax": 228.79286193847656,
+      "label": "orange"
+    },
+    {
+      "object_index": "<obj3>",
+      "xmin": 137.16893005371094,
+      "ymin": 106.5866470336914,
+      "xmax": 269.5574035644531,
+      "ymax": 231.6998748779297,
+      "label": "orange"
+    },
+    {
+      "object_index": "<obj2>",
+      "xmin": 162.2027130126953,
+      "ymin": 11.284077644348145,
+      "xmax": 292.2257995605469,
+      "ymax": 125.90083312988281,
+      "label": "orange"
+    },
+    {
+      "object_index": "<obj5>",
+      "xmin": 206.35691833496094,
+      "ymin": 188.24838256835938,
+      "xmax": 331.7958068847656,
+      "ymax": 319.4797058105469,
+      "label": "orange"
+    },
+    {
+      "object_index": "<obj4>",
+      "xmin": 328.22467041015625,
+      "ymin": 202.2726593017578,
+      "xmax": 479.1216125488281,
+      "ymax": 355.93267822265625,
+      "label": "orange"
+    },
+    {
+      "object_index": "<obj1>",
+      "xmin": 25.91228485107422,
+      "ymin": 205.8505859375,
+      "xmax": 201.13473510742188,
+      "ymax": 382.04168701171875,
+      "label": "apple"
+    },
+    {
+      "object_index": "<obj0>",
+      "xmin": 268.4242858886719,
+      "ymin": 61.46438217163086,
+      "xmax": 428.7008056640625,
+      "ymax": 224.63768005371094,
+      "label": "apple"
+    }
+  ],
+  "prompt_tokens": 414,
+  "completion_tokens": 19
+}

@@ -1,0 +1,13 @@
+backend: CPU (Intel(R) Core(TM) i9-14900K)
+Using 100 proposals from --bbox-list.
+[gguf] arch=vlxvision n_kv=35 n_tensors=708
+[gguf] data section at 46112 (align 32)
+[time] vision setup (gguf reads + parse): 756.1 ms
+[time] vision run 0 (cold): prep 5.6 | mmproj 1194.4 | fpn 1033.2 | radio 1491.3 | hfre 34.0 | proj 37.7 | total 3804.0 ms
+[time] vision run 1: prep 4.2 | mmproj 909.3 | fpn 277.0 | radio 960.4 | hfre 34.9 | proj 38.4 | total 2230.6 ms
+[time] vision run 2: prep 8.0 | mmproj 913.9 | fpn 279.8 | radio 958.0 | hfre 31.6 | proj 37.6 | total 2234.2 ms
+[time] vision run 3: prep 4.3 | mmproj 911.1 | fpn 276.7 | radio 982.5 | hfre 36.3 | proj 36.6 | total 2252.7 ms
+[time] vision warm median of 3: prep 4.3 | mmproj 911.1 | fpn 277.0 | radio 960.4 | hfre 34.9 | proj 37.6 | total 2234.2 ms
+[time] vision total: 11363.3 ms
+................................................................................
+[time] llm load 776.8 ms | prefill 414 tok 7116.7 ms | decode 19 tok 4768.8 ms (3.77 tok/s) | total 24030.4 ms | dev-mem 0.0 GiB

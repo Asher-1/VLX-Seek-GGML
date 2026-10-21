@@ -1,0 +1,52 @@
+{
+  "demo_image_detection": {
+    "answer": "<ground>orange</ground><objects><obj6><obj3><obj2><obj5><obj4></objects>\n<ground>apple</ground><objects><obj1><obj0></objects>",
+    "prompt_tokens": 414,
+    "completion_tokens": 19
+  },
+  "demo_image2_detection": {
+    "answer": "<ground>the man wearing a yellow shirt</ground><objects><obj10></objects>",
+    "prompt_tokens": 961,
+    "completion_tokens": 12
+  },
+  "demo_image2_grounding_single": {
+    "answer": "<ground>the person in a white shirt</ground><objects><obj12></objects>",
+    "prompt_tokens": 961,
+    "completion_tokens": 12
+  },
+  "000000039769_detection": {
+    "answer": "<ground>the cat closest to the camera</ground><objects><obj1></objects>",
+    "prompt_tokens": 525,
+    "completion_tokens": 12
+  },
+  "000000397133_detection": {
+    "answer": "<ground>bowl</ground><objects><obj23><obj2><obj6><obj8></objects>\n<ground>spoon</ground><objects><obj72><obj30><obj17></objects>\n<ground>person</ground><objects><obj80><obj0></objects>",
+    "prompt_tokens": 484,
+    "completion_tokens": 29
+  },
+  "kitchen_modern_detection": {
+    "answer": "<ground>the microwave oven above the kitchen counter</ground><objects><obj18></objects>",
+    "prompt_tokens": 1306,
+    "completion_tokens": 13
+  },
+  "street_traffic_detection": {
+    "answer": "<ground>the white police van</ground><objects><obj15></objects>",
+    "prompt_tokens": 1383,
+    "completion_tokens": 10
+  },
+  "crosswalk_pedestrians_detection": {
+    "answer": "<ground>the person riding a bicycle</ground><objects><obj5><obj31></objects>",
+    "prompt_tokens": 1224,
+    "completion_tokens": 12
+  },
+  "ebike_riders_detection": {
+    "answer": "<ground>person riding electric bike</ground><objects><obj3></objects>",
+    "prompt_tokens": 1423,
+    "completion_tokens": 10
+  },
+  "water_bottles_table_detection": {
+    "answer": "<ground>the water bottle standing next to the white plastic bag</ground><objects><obj7></objects>",
+    "prompt_tokens": 1309,
+    "completion_tokens": 16
+  }
+}

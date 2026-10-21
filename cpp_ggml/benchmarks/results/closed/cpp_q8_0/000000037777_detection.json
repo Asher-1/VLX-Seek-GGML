@@ -1,0 +1,6 @@
+{
+  "answer": "<ground>train</ground><objects>None</objects>\n<ground>person</ground><objects>None</objects>",
+  "result_bbox_list": [],
+  "prompt_tokens": 299,
+  "completion_tokens": 14
+}

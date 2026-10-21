@@ -1,0 +1,172 @@
+{
+  "demo_image_detection": {
+    "f16_vs_python_token_identical": true,
+    "q8_0_vs_python_token_identical": true,
+    "tokens_identical": true,
+    "n_boxes": {
+      "cpp_f16": 7,
+      "cpp_q8_0": 7,
+      "python": 7
+    },
+    "box_count_match": true,
+    "max_box_coord_delta_px": 0.0,
+    "answers": {
+      "cpp_f16": "<ground>orange</ground><objects><obj6><obj3><obj2><obj5><obj4></objects>\n<ground>apple</ground><objects><obj1><obj0></objects>",
+      "cpp_q8_0": "<ground>orange</ground><objects><obj6><obj3><obj2><obj5><obj4></objects>\n<ground>apple</ground><objects><obj1><obj0></objects>",
+      "python": "<ground>orange</ground><objects><obj6><obj3><obj2><obj5><obj4></objects>\n<ground>apple</ground><objects><obj1><obj0></objects>"
+    }
+  },
+  "demo_image2_detection": {
+    "f16_vs_python_token_identical": true,
+    "q8_0_vs_python_token_identical": true,
+    "tokens_identical": true,
+    "n_boxes": {
+      "cpp_f16": 1,
+      "cpp_q8_0": 1,
+      "python": 1
+    },
+    "box_count_match": true,
+    "max_box_coord_delta_px": 0.0,
+    "answers": {
+      "cpp_f16": "<ground>the man wearing a yellow shirt</ground><objects><obj10></objects>",
+      "cpp_q8_0": "<ground>the man wearing a yellow shirt</ground><objects><obj10></objects>",
+      "python": "<ground>the man wearing a yellow shirt</ground><objects><obj10></objects>"
+    }
+  },
+  "demo_image2_grounding_single": {
+    "f16_vs_python_token_identical": true,
+    "q8_0_vs_python_token_identical": true,
+    "tokens_identical": true,
+    "n_boxes": {
+      "cpp_f16": 1,
+      "cpp_q8_0": 1,
+      "python": 1
+    },
+    "box_count_match": true,
+    "max_box_coord_delta_px": 0.0,
+    "answers": {
+      "cpp_f16": "<ground>the person in a white shirt</ground><objects><obj12></objects>",
+      "cpp_q8_0": "<ground>the person in a white shirt</ground><objects><obj12></objects>",
+      "python": "<ground>the person in a white shirt</ground><objects><obj12></objects>"
+    }
+  },
+  "000000039769_detection": {
+    "f16_vs_python_token_identical": true,
+    "q8_0_vs_python_token_identical": true,
+    "tokens_identical": true,
+    "n_boxes": {
+      "cpp_f16": 1,
+      "cpp_q8_0": 1,
+      "python": 1
+    },
+    "box_count_match": true,
+    "max_box_coord_delta_px": 0.0,
+    "answers": {
+      "cpp_f16": "<ground>the cat closest to the camera</ground><objects><obj1></objects>",
+      "cpp_q8_0": "<ground>the cat closest to the camera</ground><objects><obj1></objects>",
+      "python": "<ground>the cat closest to the camera</ground><objects><obj1></objects>"
+    }
+  },
+  "000000397133_detection": {
+    "f16_vs_python_token_identical": true,
+    "q8_0_vs_python_token_identical": false,
+    "tokens_identical": false,
+    "n_boxes": {
+      "cpp_f16": 9,
+      "cpp_q8_0": 10,
+      "python": 9
+    },
+    "box_count_match": false,
+    "max_box_coord_delta_px": null,
+    "answers": {
+      "cpp_f16": "<ground>bowl</ground><objects><obj23><obj2><obj6><obj8></objects>\n<ground>spoon</ground><objects><obj72><obj30><obj17></objects>\n<ground>person</ground><objects><obj80><obj0></objects>",
+      "cpp_q8_0": "<ground>bowl</ground><objects><obj23><obj2><obj6><obj8></objects>\n<ground>spoon</ground><objects><obj72><obj30><obj17><obj32></objects>\n<ground>person</ground><objects><obj80><obj0></objects>",
+      "python": "<ground>bowl</ground><objects><obj23><obj2><obj6><obj8></objects>\n<ground>spoon</ground><objects><obj72><obj30><obj17></objects>\n<ground>person</ground><objects><obj80><obj0></objects>"
+    }
+  },
+  "kitchen_modern_detection": {
+    "f16_vs_python_token_identical": false,
+    "q8_0_vs_python_token_identical": false,
+    "tokens_identical": true,
+    "n_boxes": {
+      "cpp_f16": 1,
+      "cpp_q8_0": 1,
+      "python": 1
+    },
+    "box_count_match": true,
+    "max_box_coord_delta_px": 68.6203,
+    "answers": {
+      "cpp_f16": "<ground>the microwave oven above the kitchen counter</ground><objects><obj10></objects>",
+      "cpp_q8_0": "<ground>the microwave oven above the kitchen counter</ground><objects><obj10></objects>",
+      "python": "<ground>the microwave oven above the kitchen counter</ground><objects><obj18></objects>"
+    }
+  },
+  "street_traffic_detection": {
+    "f16_vs_python_token_identical": true,
+    "q8_0_vs_python_token_identical": true,
+    "tokens_identical": true,
+    "n_boxes": {
+      "cpp_f16": 1,
+      "cpp_q8_0": 1,
+      "python": 1
+    },
+    "box_count_match": true,
+    "max_box_coord_delta_px": 0.0,
+    "answers": {
+      "cpp_f16": "<ground>the white police van</ground><objects><obj15></objects>",
+      "cpp_q8_0": "<ground>the white police van</ground><objects><obj15></objects>",
+      "python": "<ground>the white police van</ground><objects><obj15></objects>"
+    }
+  },
+  "crosswalk_pedestrians_detection": {
+    "f16_vs_python_token_identical": true,
+    "q8_0_vs_python_token_identical": true,
+    "tokens_identical": true,
+    "n_boxes": {
+      "cpp_f16": 2,
+      "cpp_q8_0": 2,
+      "python": 2
+    },
+    "box_count_match": true,
+    "max_box_coord_delta_px": 0.0,
+    "answers": {
+      "cpp_f16": "<ground>the person riding a bicycle</ground><objects><obj5><obj31></objects>",
+      "cpp_q8_0": "<ground>the person riding a bicycle</ground><objects><obj5><obj31></objects>",
+      "python": "<ground>the person riding a bicycle</ground><objects><obj5><obj31></objects>"
+    }
+  },
+  "ebike_riders_detection": {
+    "f16_vs_python_token_identical": true,
+    "q8_0_vs_python_token_identical": true,
+    "tokens_identical": true,
+    "n_boxes": {
+      "cpp_f16": 1,
+      "cpp_q8_0": 1,
+      "python": 1
+    },
+    "box_count_match": true,
+    "max_box_coord_delta_px": 0.0,
+    "answers": {
+      "cpp_f16": "<ground>person riding electric bike</ground><objects><obj3></objects>",
+      "cpp_q8_0": "<ground>person riding electric bike</ground><objects><obj3></objects>",
+      "python": "<ground>person riding electric bike</ground><objects><obj3></objects>"
+    }
+  },
+  "water_bottles_table_detection": {
+    "f16_vs_python_token_identical": true,
+    "q8_0_vs_python_token_identical": true,
+    "tokens_identical": true,
+    "n_boxes": {
+      "cpp_f16": 1,
+      "cpp_q8_0": 1,
+      "python": 1
+    },
+    "box_count_match": true,
+    "max_box_coord_delta_px": 0.0,
+    "answers": {
+      "cpp_f16": "<ground>the water bottle standing next to the white plastic bag</ground><objects><obj7></objects>",
+      "cpp_q8_0": "<ground>the water bottle standing next to the white plastic bag</ground><objects><obj7></objects>",
+      "python": "<ground>the water bottle standing next to the white plastic bag</ground><objects><obj7></objects>"
+    }
+  }
+}

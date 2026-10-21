@@ -1,0 +1,17 @@
+{
+  "answer": "<ground>the microwave oven above the kitchen counter</ground><objects><obj18></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj18>",
+      "xmin": 557.46630859375,
+      "ymin": 337.7391357421875,
+      "xmax": 635.2503051757812,
+      "ymax": 390.00823974609375,
+      "label": "the microwave oven above the kitchen counter"
+    }
+  ],
+  "prompt_tokens": 1306,
+  "completion_tokens": 13,
+  "visualization_path": "cpp_ggml/benchmarks/results/fixed/python/kitchen_modern_detection.png",
+  "_wall_ms_first_run": 625.7
+}

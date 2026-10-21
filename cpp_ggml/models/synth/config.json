@@ -1,0 +1,26 @@
+{
+ "model_type": "vlx_seek_1_5",
+ "mm_object_hidden_size": 6656,
+ "mm_roi_output_size": 14,
+ "mm_roi_algined": false,
+ "mm_add_pos_embed": true,
+ "mm_object_feature_combination": "concat",
+ "mm_use_simpleFPN_for_vt": true,
+ "mm_simpleFPN_out_channels_for_vt": 512,
+ "vision_config": {
+  "patch_size": 16,
+  "spatial_merge_size": 2
+ },
+ "vision_aux_config": {
+  "args": {
+   "model": "vit_so400m_patch16_224",
+   "cpe_max_size": 128,
+   "cpe_num_registers": null,
+   "num_cls_tokens": 1,
+   "register_multiple": 10,
+   "dtype": "float32"
+  },
+  "patch_size": 16,
+  "max_resolution": 128
+ }
+}

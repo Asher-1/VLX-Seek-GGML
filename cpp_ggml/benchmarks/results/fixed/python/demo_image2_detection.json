@@ -1,0 +1,17 @@
+{
+  "answer": "<ground>the man wearing a yellow shirt</ground><objects><obj10></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj10>",
+      "xmin": 375.99310302734375,
+      "ymin": 242.87442016601562,
+      "xmax": 513.6287231445312,
+      "ymax": 667.0418090820312,
+      "label": "the man wearing a yellow shirt"
+    }
+  ],
+  "prompt_tokens": 961,
+  "completion_tokens": 12,
+  "visualization_path": "cpp_ggml/benchmarks/results/fixed/python/demo_image2_detection.png",
+  "_wall_ms_first_run": 493.4
+}

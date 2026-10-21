@@ -1,0 +1,15 @@
+{
+  "answer": "<ground>the microwave oven above the kitchen counter</ground><objects><obj10></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj10>",
+      "xmin": 488.85284423828125,
+      "ymin": 324.84234619140625,
+      "xmax": 639.7383422851562,
+      "ymax": 407.7939453125,
+      "label": "the microwave oven above the kitchen counter"
+    }
+  ],
+  "prompt_tokens": 1306,
+  "completion_tokens": 13
+}

@@ -229,6 +229,16 @@ python inference.py \
 
 Detection results are printed as JSON and visualized to `<image_stem>_result.png` by default. See the **[complete inference guide](docs/inference.md)** for all tasks, custom proposals, generation options, output fields, and the Python API.
 
+### C++ (GGML) Inference
+
+This repository also ships a full-chain C++17/GGML port with the same arguments and the same JSON output. The C++ backend is fully self-contained — no Python runtime or dependencies are needed for inference (Python is only used by the optional one-time GGUF conversion and the benchmark harness):
+
+```bash
+./run_vlx.sh --backend cpp --device cuda --task detection --text "orange; apple"
+```
+
+Greedy generation is token-identical to the python backend (f16/q8_0 weights, cpu/cuda/vulkan), with a 10-case benchmark suite and side-by-side comparison charts under [cpp_ggml/benchmarks](cpp_ggml/benchmarks). See **[cpp_ggml/README.md](cpp_ggml/README.md)** for the build and parity-gate protocol, and the [inference guide](docs/inference.md#cpp-ggml-backend) for usage.
+
 ## VLX-Seek 1.5 Representative Examples
 
 The following examples demonstrate VLX-Seek 1.5's fine-grained perception and object localization across different device viewpoints. (<font color="#7c3aed"><strong><em>Click an image to view the full-resolution result and detection details</em></strong></font>)

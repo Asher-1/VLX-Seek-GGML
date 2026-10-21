@@ -1,0 +1,25 @@
+{
+  "answer": "<ground>the person riding a bicycle</ground><objects><obj5><obj31></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj5>",
+      "xmin": 645.5357666015625,
+      "ymin": 146.38568115234375,
+      "xmax": 684.5384521484375,
+      "ymax": 184.65753173828125,
+      "label": "the person riding a bicycle"
+    },
+    {
+      "object_index": "<obj31>",
+      "xmin": 809.4398803710938,
+      "ymin": 199.55523681640625,
+      "xmax": 843.0426025390625,
+      "ymax": 238.22235107421875,
+      "label": "the person riding a bicycle"
+    }
+  ],
+  "prompt_tokens": 1224,
+  "completion_tokens": 12,
+  "visualization_path": "cpp_ggml/benchmarks/results/closed/python/crosswalk_pedestrians_detection.png",
+  "_wall_ms_first_run": 626.3
+}

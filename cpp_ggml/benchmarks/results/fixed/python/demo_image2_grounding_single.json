@@ -1,0 +1,17 @@
+{
+  "answer": "<ground>the person in a white shirt</ground><objects><obj12></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj12>",
+      "xmin": 761.4896850585938,
+      "ymin": 228.7522430419922,
+      "xmax": 875.5113525390625,
+      "ymax": 669.721923828125,
+      "label": "the person in a white shirt"
+    }
+  ],
+  "prompt_tokens": 961,
+  "completion_tokens": 12,
+  "visualization_path": "cpp_ggml/benchmarks/results/fixed/python/demo_image2_grounding_single.png",
+  "_wall_ms_first_run": 493.3
+}

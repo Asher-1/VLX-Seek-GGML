@@ -1,0 +1,81 @@
+{
+  "answer": "<ground>bowl</ground><objects><obj23><obj2><obj6><obj8></objects>\n<ground>spoon</ground><objects><obj72><obj30><obj17></objects>\n<ground>person</ground><objects><obj80><obj0></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj23>",
+      "xmin": 29.82171630859375,
+      "ymin": 343.28466796875,
+      "xmax": 99.92503356933594,
+      "ymax": 384.7398376464844,
+      "label": "bowl"
+    },
+    {
+      "object_index": "<obj2>",
+      "xmin": 56.45261764526367,
+      "ymin": 287.24798583984375,
+      "xmax": 135.15049743652344,
+      "ymax": 327.5364990234375,
+      "label": "bowl"
+    },
+    {
+      "object_index": "<obj6>",
+      "xmin": 154.53866577148438,
+      "ymin": 168.13568115234375,
+      "xmax": 182.91249084472656,
+      "ymax": 184.00531005859375,
+      "label": "bowl"
+    },
+    {
+      "object_index": "<obj8>",
+      "xmin": 155.98806762695312,
+      "ymin": 112.5308837890625,
+      "xmax": 174.7976837158203,
+      "ymax": 129.11131286621094,
+      "label": "bowl"
+    },
+    {
+      "object_index": "<obj72>",
+      "xmin": 511.2153015136719,
+      "ymin": 45.9970703125,
+      "xmax": 522.397705078125,
+      "ymax": 93.05958557128906,
+      "label": "spoon"
+    },
+    {
+      "object_index": "<obj30>",
+      "xmin": 520.6988525390625,
+      "ymin": 42.410675048828125,
+      "xmax": 534.3289184570312,
+      "ymax": 112.16104125976562,
+      "label": "spoon"
+    },
+    {
+      "object_index": "<obj17>",
+      "xmin": 532.1973266601562,
+      "ymin": 44.87071228027344,
+      "xmax": 553.6915283203125,
+      "ymax": 126.15451049804688,
+      "label": "spoon"
+    },
+    {
+      "object_index": "<obj80>",
+      "xmin": 3.4994735717773438,
+      "ymin": 237.36849975585938,
+      "xmax": 89.1666030883789,
+      "ymax": 304.77789306640625,
+      "label": "person"
+    },
+    {
+      "object_index": "<obj0>",
+      "xmin": 386.5722961425781,
+      "ymin": 69.8048095703125,
+      "xmax": 499.4168701171875,
+      "ymax": 342.97637939453125,
+      "label": "person"
+    }
+  ],
+  "prompt_tokens": 484,
+  "completion_tokens": 29,
+  "visualization_path": "cpp_ggml/benchmarks/results/fixed/python/000000397133_detection.png",
+  "_wall_ms_first_run": 761.8
+}

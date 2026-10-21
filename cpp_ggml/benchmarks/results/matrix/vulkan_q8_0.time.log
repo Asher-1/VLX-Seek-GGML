@@ -1,0 +1,13 @@
+backend: Vulkan0 (NVIDIA GeForce RTX 4090)
+Using 100 proposals from --bbox-list.
+[gguf] arch=vlxvision n_kv=35 n_tensors=708
+[gguf] data section at 46112 (align 32)
+[time] vision setup (gguf reads + parse): 468.5 ms
+[time] vision run 0 (cold): prep 5.6 | mmproj 115.5 | fpn 48.5 | radio 376.1 | hfre 37.0 | proj 17.3 | total 608.4 ms
+[time] vision run 1: prep 4.1 | mmproj 20.0 | fpn 12.7 | radio 23.5 | hfre 32.4 | proj 6.8 | total 105.9 ms
+[time] vision run 2: prep 4.1 | mmproj 19.9 | fpn 8.4 | radio 21.0 | hfre 31.4 | proj 6.8 | total 96.7 ms
+[time] vision run 3: prep 4.2 | mmproj 20.0 | fpn 9.1 | radio 21.0 | hfre 34.1 | proj 8.7 | total 102.9 ms
+[time] vision warm median of 3: prep 4.1 | mmproj 20.0 | fpn 9.1 | radio 21.0 | hfre 32.4 | proj 6.8 | total 102.9 ms
+[time] vision total: 1431.4 ms
+................................................................................
+[time] llm load 1621.5 ms | prefill 414 tok 61.6 ms | decode 19 tok 198.7 ms (90.60 tok/s) | total 3422.1 ms | dev-mem 8.8 GiB

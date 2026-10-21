@@ -4,3 +4,12 @@
 causal-conv1d/
 resources/
 __pycache__/
+cpp_ggml/build*/
+*.gguf
+*.pt
+*.safetensors
+.venv-cuda/
+
+# benchmark intermediate renders (final charts are committed under charts/)
+cpp_ggml/benchmarks/results/**/*.png
+demo/_app_runs/

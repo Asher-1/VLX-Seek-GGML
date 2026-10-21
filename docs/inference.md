@@ -320,6 +320,87 @@ The command prints a result dictionary as formatted JSON:
 
 VQA, captioning, or OCR answers may be free-form text and can have an empty `result_bbox_list`.
 
+## C++ (GGML) Backend
+
+The repository also ships a pure C++17/GGML port of the full pipeline
+(WeDetect-Uni proposals → Qwen3.5-VL vision tower → C-RADIOv4 aux tower +
+HFRE → Qwen3.5 LLM via llama.cpp). It prints the same JSON as `inference.py`:
+for the detection demo the generated tokens are identical and proposal box
+coordinates agree within fp32 rounding. Build instructions and the parity-gate
+protocol live in [cpp_ggml/README.md](../cpp_ggml/README.md).
+
+### One-command launcher
+
+`run_vlx.sh` dispatches to either backend with the same arguments:
+
+```bash
+./run_vlx.sh --backend cpp --device cuda --task detection --text "orange; apple"
+./run_vlx.sh --backend python --device cuda --task detection --text "orange; apple"
+```
+
+`--backend cpp` expects the built binaries under `cpp_ggml/build-{vlx,cuda,vulkan}`
+(one build directory per `--device cpu|cuda|vulkan`; the python backend has no
+vulkan). Both backends read the same local model files: the C++ backend loads
+converted GGUF files from `cpp_ggml/models/gguf/` with `--precision f16|q8_0`
+(f16 by default; f32 is not shipped — see
+[cpp_ggml/models/MODEL_CARD.md](../cpp_ggml/models/MODEL_CARD.md) for the
+tier policy and how to rebuild a f32 file). Without `--bbox-list` both
+backends run WeDetect-Uni first — in the C++ backend this is a native GGML
+conv graph loaded from its f32 GGUF (the official `.pth` dtype), not a Python
+call.
+
+### Numerical criteria per precision
+
+The C++ port is gated against the official python pipeline
+(`cpp_ggml/scripts/compare_official_parity.py`). Two criteria apply:
+
+- **Token identity (hard constraint, every precision).** Greedy generation must
+  emit the exact same tokens as the official release, so the printed JSON
+  (`answer`, `result_bbox_list`, token counts) matches verbatim. A precision
+  that flips even one token fails, regardless of how small the float-level
+  drift is.
+- **Three-way noise ratio (f32 / f16 tiers).** The official release is bf16,
+  i.e. itself a noisy estimate of the model. With an official f32 run as the
+  referee, an f32/f16 C++ build passes when its stage noise stays within
+  `ratio <= 1.0` of the official bf16 noise:
+  `||cpp − f32|| / ||bf16 − f32|| <= 1.0`.
+
+`q8_0` is a separate quantized tier: its quantization noise measurably exceeds
+the bf16 representation error, so it is held to the token-identity hard
+constraint plus a looser three-way band, `ratio <= 2.5`. In practice q8_0
+stays token-identical on all backends (cpu/cuda/vulkan) with per-stage ratios
+around 0.8–2.0.
+
+WeDetect proposals always run from the f32 GGUF (the official `.pth` dtype):
+q8_0 changes the proposal box set, and even f16 sub-pixel shifts can reorder
+near-tied raster sort keys — the box set feeds the LLM, so it stays f32.
+
+### Timing methodology and warm numbers
+
+First-run latency has a large cold-start component (GGUF reads + parse, weight
+upload, cuBLAS/cuDNN init). `vlx-cli run --warm-runs N` re-runs the vision
+stages N times with weights and graphs resident and reports the median of
+those runs, isolating steady-state compute;
+`cpp_ggml/scripts/bench_official.py` warms the python backend the same way.
+
+Measured on RTX 4090, detection task, 100 fixed proposals, greedy, 19-token
+completion:
+
+| Backend / precision | vision (warm median) | prefill | TTFT (vision+prefill) | decode | e2e (warm) | device mem |
+| --- | --- | --- | --- | --- | --- | --- |
+| python bf16 (official) | — | — | 107.3 ms | 44.0 tok/s | ~520 ms | 19.5 GiB |
+| cpp f16 | 81.9 ms | 74.8 ms | 156.7 ms (1.46×) | 54.6 tok/s | ~487 ms | 15.5 GiB |
+| cpp q8_0 | 67.0 ms | 44.2 ms | 111.2 ms (1.04×) | 93.2 tok/s | ~303 ms | 8.6 GiB |
+
+The cpp q8_0 row now includes the fused CUDA RoIAlign consuming
+GPU-resident levels (hfre 38 → ~19 ms) — decode is 2.1x the official
+backend. e2e columns for f16/q8_0 are TTFT + 18/decode; python's is
+TTFT + 18/decode at its measured rate.
+
+Cold-start decomposition (cpp f16): GGUF reads + parse ~2.2 s, first-run weight
+upload + kernel init ~0.5 s (the RADIO tower dominates), steady-state compute
+~0.12 s. With `--warm-runs 3` the reported median excludes all of it.
+
 ## Python API
 
 `VLXSeekWorker` keeps the model loaded across requests. Proposal generation is handled by the CLI, so Python API callers should prepare their own boxes for region-level tasks.

@@ -24,7 +24,7 @@ def load_pretrained_model(model_path, device="cuda", dtype=torch.bfloat16):
         model = VLXSeek1_5ForCausalLM.from_pretrained(
                 model_path,
                 low_cpu_mem_usage=True,
-                attn_implementation="flash_attention_2",
+                attn_implementation="sdpa",
                 **kwargs
             )
     else:

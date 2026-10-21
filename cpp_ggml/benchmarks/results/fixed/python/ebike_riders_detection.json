@@ -1,0 +1,17 @@
+{
+  "answer": "<ground>person riding electric bike</ground><objects><obj3></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj3>",
+      "xmin": 656.5534057617188,
+      "ymin": 341.0718688964844,
+      "xmax": 870.7549438476562,
+      "ymax": 805.656982421875,
+      "label": "person riding electric bike"
+    }
+  ],
+  "prompt_tokens": 1423,
+  "completion_tokens": 10,
+  "visualization_path": "cpp_ggml/benchmarks/results/fixed/python/ebike_riders_detection.png",
+  "_wall_ms_first_run": 594.2
+}

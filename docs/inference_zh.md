@@ -328,6 +328,48 @@ python inference.py \
 
 VQA、区域描述或 OCR 可以返回自由文本，其 `result_bbox_list` 可能为空。
 
+## C++（GGML）后端
+
+仓库同时提供全链路的纯 C++17/GGML 移植（WeDetect-Uni 候选框 → Qwen3.5-VL 视觉塔 → C-RADIOv4 辅助塔 + HFRE → 经 llama.cpp 的 Qwen3.5 LLM）。它打印与 `inference.py` 相同的 JSON：在 detection 示例上生成 token 逐字一致，候选框坐标仅相差 fp32 舍入级误差。构建方法与 parity gate 协议见 [cpp_ggml/README.md](../cpp_ggml/README.md)。
+
+### 一键启动
+
+`run_vlx.sh` 用相同的参数把请求分发到任一后端：
+
+```bash
+./run_vlx.sh --backend cpp --device cuda --task detection --text "orange; apple"
+./run_vlx.sh --backend python --device cuda --task detection --text "orange; apple"
+```
+
+`--backend cpp` 要求二进制位于 `cpp_ggml/build-{vlx,cuda,vulkan}`（每个 `--device cpu|cuda|vulkan` 对应一个构建目录；python 后端没有 vulkan）。两个后端读取相同的本地模型文件：C++ 后端从 `cpp_ggml/models/gguf/` 加载转换后的 GGUF，通过 `--precision f16|q8_0` 选择精度档（默认 f16；f32 不随仓库分发，档位政策与重建方法见 [cpp_ggml/models/MODEL_CARD.md](../cpp_ggml/models/MODEL_CARD.md)）。不传 `--bbox-list` 时两个后端都会先跑 WeDetect-Uni——C++ 后端里这是原生的 GGML 卷积图（从其 f32 GGUF 加载，即官方 `.pth` 的精度），不是 Python 调用。
+
+### 各精度档的数值判据
+
+C++ 移植针对官方 python 流水线做门控（`cpp_ggml/scripts/compare_official_parity.py`），判据有两条：
+
+- **token 一致（硬约束，所有精度档）。** 贪心解码必须与官方版本逐 token 相同，即打印的 JSON（`answer`、`result_bbox_list`、token 数）逐字一致。只要翻转一个 token 就判失败，无论浮点误差多小。
+- **三方噪声比（f32 / f16 档）。** 官方发布本身是 bf16，即它本身就是带噪声的模型估计。以官方 f32 运行为裁判，f32/f16 C++ 构建在各阶段的噪声与官方 bf16 噪声之比满足 `ratio <= 1.0` 才通过：`||cpp − f32|| / ||bf16 − f32|| <= 1.0`。
+
+`q8_0` 是独立的量化档：其量化噪声明显超过 bf16 表示误差，因此它受 token 一致硬约束加一个更宽松的三方判据带 `ratio <= 2.5` 约束。实践中 q8_0 在所有后端（cpu/cuda/vulkan）上均保持 token 一致，各阶段 ratio 在 0.8–2.0 之间。
+
+WeDetect 候选框始终从 f32 GGUF 运行（与官方 `.pth` 精度一致）：q8_0 会改变候选框集合，f16 的亚像素偏移也可能重排接近并列的 raster 排序键——候选框集合直接喂给 LLM，因此保持 f32。
+
+### 计时方法与 warm 数据
+
+首次运行延迟有很大冷启动成分（GGUF 读盘 + 解析、权重上传、cuBLAS/cuDNN 初始化）。`vlx-cli run --warm-runs N` 会在权重与计算图常驻的情况下把视觉各阶段再跑 N 次，报告这些轮次的中位数，从而剥离冷启动得到稳态计算耗时；`cpp_ggml/scripts/bench_official.py` 用相同方式对 python 后端做 warm。
+
+在 RTX 4090 上实测（detection 任务、100 个固定候选框、贪心解码、19 token 输出）：
+
+| 后端 / 精度 | vision（warm 中位数） | prefill | TTFT（vision+prefill） | decode | e2e（warm） | 显存 |
+| --- | --- | --- | --- | --- | --- | --- |
+| python bf16（官方） | — | — | 107.3 ms | 44.0 tok/s | ~520 ms | 19.5 GiB |
+| cpp f16 | 81.9 ms | 74.8 ms | 156.7 ms（1.46×） | 54.6 tok/s | ~487 ms | 15.5 GiB |
+| cpp q8_0 | 67.0 ms | 44.2 ms | 111.2 ms（1.04×） | 93.2 tok/s | ~303 ms | 8.6 GiB |
+
+cpp q8_0 行已包含消费 GPU 常驻特征的融合 CUDA RoIAlign（hfre 38 → 约 19 ms）——decode 达官方后端的 2.1 倍。f16/q8_0 的 e2e 列为 TTFT + 18/decode 推算；python 列按其实测 decode 推算。
+
+冷启动分解（cpp f16）：GGUF 读盘 + 解析约 2.2 s，首轮权重上传 + 内核初始化约 0.5 s（RADIO 塔占大头），稳态计算约 0.12 s。使用 `--warm-runs 3` 时报告的中位数不含以上任何一项。
+
 ## Python API
 
 `VLXSeekWorker` 可以在多次请求之间保持模型常驻。候选区域生成由命令行入口负责，因此 Python API 调用方需要为区域级任务自行准备候选框。

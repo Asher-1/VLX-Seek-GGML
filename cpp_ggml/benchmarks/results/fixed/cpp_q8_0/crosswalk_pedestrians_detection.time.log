@@ -1,0 +1,13 @@
+backend: CUDA0 (NVIDIA GeForce RTX 4090)
+Using 100 proposals from --bbox-list.
+[gguf] arch=vlxvision n_kv=35 n_tensors=708
+[gguf] data section at 46112 (align 32)
+[time] vision setup (gguf reads + parse): 467.4 ms
+[time] vision run 0 (cold): prep 25.7 | mmproj 235.7 | fpn 28.1 | radio 550.1 | hfre 206.3 | proj 4.3 | total 1075.3 ms
+[time] vision run 1: prep 24.1 | mmproj 134.8 | fpn 17.8 | radio 133.5 | hfre 90.2 | proj 5.2 | total 424.8 ms
+[time] vision run 2: prep 16.7 | mmproj 131.7 | fpn 17.4 | radio 132.2 | hfre 90.4 | proj 5.2 | total 409.2 ms
+[time] vision run 3: prep 16.9 | mmproj 134.3 | fpn 17.4 | radio 131.9 | hfre 90.6 | proj 4.0 | total 409.5 ms
+[time] vision warm median of 3: prep 16.9 | mmproj 134.3 | fpn 17.4 | radio 132.2 | hfre 90.4 | proj 5.2 | total 409.5 ms
+[time] vision total: 2830.5 ms
+................................................................................
+[time] llm load 1097.4 ms | prefill 1224 tok 120.8 ms | decode 12 tok 119.9 ms (91.78 tok/s) | total 4269.1 ms | dev-mem 8.9 GiB

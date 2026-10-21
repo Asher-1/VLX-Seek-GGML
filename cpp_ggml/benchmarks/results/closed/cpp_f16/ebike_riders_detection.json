@@ -1,0 +1,15 @@
+{
+  "answer": "<ground>person riding electric bike</ground><objects><obj2></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj2>",
+      "xmin": 656.5543212890625,
+      "ymin": 341.0670471191406,
+      "xmax": 870.7534790039062,
+      "ymax": 805.64599609375,
+      "label": "person riding electric bike"
+    }
+  ],
+  "prompt_tokens": 1423,
+  "completion_tokens": 10
+}

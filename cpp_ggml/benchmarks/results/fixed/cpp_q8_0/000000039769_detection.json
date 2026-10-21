@@ -1,0 +1,15 @@
+{
+  "answer": "<ground>the cat closest to the camera</ground><objects><obj1></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj1>",
+      "xmin": 346.7440185546875,
+      "ymin": 24.5086669921875,
+      "xmax": 639.419677734375,
+      "ymax": 373.1572265625,
+      "label": "the cat closest to the camera"
+    }
+  ],
+  "prompt_tokens": 525,
+  "completion_tokens": 12
+}

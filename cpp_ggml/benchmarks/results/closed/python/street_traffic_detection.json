@@ -1,0 +1,17 @@
+{
+  "answer": "<ground>the white police van</ground><objects><obj15></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj15>",
+      "xmin": 374.021484375,
+      "ymin": 85.52444458007812,
+      "xmax": 622.8026123046875,
+      "ymax": 263.54119873046875,
+      "label": "the white police van"
+    }
+  ],
+  "prompt_tokens": 1383,
+  "completion_tokens": 10,
+  "visualization_path": "cpp_ggml/benchmarks/results/closed/python/street_traffic_detection.png",
+  "_wall_ms_first_run": 635.2
+}

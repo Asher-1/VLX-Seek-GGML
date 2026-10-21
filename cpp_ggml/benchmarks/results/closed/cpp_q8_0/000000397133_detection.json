@@ -1,0 +1,87 @@
+{
+  "answer": "<ground>bowl</ground><objects><obj23><obj2><obj6><obj8></objects>\n<ground>spoon</ground><objects><obj72><obj30><obj17><obj32></objects>\n<ground>person</ground><objects><obj80><obj0></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj23>",
+      "xmin": 29.82240104675293,
+      "ymin": 343.2846374511719,
+      "xmax": 99.92515563964844,
+      "ymax": 384.7389831542969,
+      "label": "bowl"
+    },
+    {
+      "object_index": "<obj2>",
+      "xmin": 56.453880310058594,
+      "ymin": 287.24859619140625,
+      "xmax": 135.14794921875,
+      "ymax": 327.5353698730469,
+      "label": "bowl"
+    },
+    {
+      "object_index": "<obj6>",
+      "xmin": 154.5395050048828,
+      "ymin": 168.1365966796875,
+      "xmax": 182.9103546142578,
+      "ymax": 184.00445556640625,
+      "label": "bowl"
+    },
+    {
+      "object_index": "<obj8>",
+      "xmin": 155.98855590820312,
+      "ymin": 112.53060913085938,
+      "xmax": 174.7966766357422,
+      "ymax": 129.11138916015625,
+      "label": "bowl"
+    },
+    {
+      "object_index": "<obj72>",
+      "xmin": 511.2165222167969,
+      "ymin": 45.998443603515625,
+      "xmax": 522.3981323242188,
+      "ymax": 93.06838989257812,
+      "label": "spoon"
+    },
+    {
+      "object_index": "<obj30>",
+      "xmin": 520.69970703125,
+      "ymin": 42.410980224609375,
+      "xmax": 534.3289794921875,
+      "ymax": 112.16127014160156,
+      "label": "spoon"
+    },
+    {
+      "object_index": "<obj17>",
+      "xmin": 532.1973266601562,
+      "ymin": 44.870697021484375,
+      "xmax": 553.6929931640625,
+      "ymax": 126.15731811523438,
+      "label": "spoon"
+    },
+    {
+      "object_index": "<obj32>",
+      "xmin": 548.9315795898438,
+      "ymin": 43.771331787109375,
+      "xmax": 567.1641845703125,
+      "ymax": 112.10359191894531,
+      "label": "spoon"
+    },
+    {
+      "object_index": "<obj80>",
+      "xmin": 3.4959182739257812,
+      "ymin": 237.365966796875,
+      "xmax": 89.16400909423828,
+      "ymax": 304.78033447265625,
+      "label": "person"
+    },
+    {
+      "object_index": "<obj0>",
+      "xmin": 386.5675048828125,
+      "ymin": 69.80267333984375,
+      "xmax": 499.4154052734375,
+      "ymax": 342.974365234375,
+      "label": "person"
+    }
+  ],
+  "prompt_tokens": 484,
+  "completion_tokens": 30
+}

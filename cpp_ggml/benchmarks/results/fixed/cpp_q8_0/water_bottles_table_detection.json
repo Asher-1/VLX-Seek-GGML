@@ -1,0 +1,15 @@
+{
+  "answer": "<ground>the water bottle standing next to the white plastic bag</ground><objects><obj7></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj7>",
+      "xmin": 1088.92626953125,
+      "ymin": 211.1328125,
+      "xmax": 1193.8939208984375,
+      "ymax": 418.211181640625,
+      "label": "the water bottle standing next to the white plastic bag"
+    }
+  ],
+  "prompt_tokens": 1309,
+  "completion_tokens": 16
+}

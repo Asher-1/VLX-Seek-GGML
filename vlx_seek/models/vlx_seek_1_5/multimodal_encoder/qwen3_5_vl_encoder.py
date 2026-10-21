@@ -36,11 +36,11 @@ class Qwen3_5_VlVisionTower(nn.Module):
         if self.name_or_path is not None:
             # Build from the checkpoint configuration; weights are loaded by
             # the parent VLX-Seek model.
-            self.visual = Qwen3_5VisionModel._from_config(self.args.vision_config, attn_implementation="flash_attention_2", dtype=torch.bfloat16)
+            self.visual = Qwen3_5VisionModel._from_config(self.args.vision_config, attn_implementation="sdpa", dtype=torch.bfloat16)
             self.image_processor = Qwen2VLImageProcessor.from_pretrained(self.name_or_path, min_pixels=self.min_pixels, max_pixels=self.max_pixels)
         else:
             # Load an independent Hugging Face vision checkpoint with weights.
-            self.visual, loading_info = Qwen3_5VisionModel.from_pretrained(self.image_tower_name, attn_implementation="flash_attention_2", dtype=torch.bfloat16, output_loading_info=True)
+            self.visual, loading_info = Qwen3_5VisionModel.from_pretrained(self.image_tower_name, attn_implementation="sdpa", dtype=torch.bfloat16, output_loading_info=True)
             self.image_processor = Qwen2VLImageProcessor.from_pretrained(self.image_tower_name, min_pixels=self.min_pixels, max_pixels=self.max_pixels)
 
         self.is_loaded = True

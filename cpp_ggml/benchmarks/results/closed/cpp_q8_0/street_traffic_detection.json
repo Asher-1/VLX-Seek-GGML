@@ -1,0 +1,15 @@
+{
+  "answer": "<ground>the white police van</ground><objects><obj15></objects>",
+  "result_bbox_list": [
+    {
+      "object_index": "<obj15>",
+      "xmin": 374.03814697265625,
+      "ymin": 85.517333984375,
+      "xmax": 622.8053588867188,
+      "ymax": 263.5452880859375,
+      "label": "the white police van"
+    }
+  ],
+  "prompt_tokens": 1383,
+  "completion_tokens": 10
+}

@@ -1,0 +1,78 @@
+{
+  "cpu_f16": {
+    "prep": 4.3,
+    "mmproj": 911.1,
+    "fpn": 277.0,
+    "radio": 960.4,
+    "hfre": 34.9,
+    "proj": 37.6,
+    "prefill": 7116.7,
+    "decode_tps": 3.77,
+    "dev_mem_gib": 0.0,
+    "TTFT": 9342.0
+  },
+  "cpu_q8_0": {
+    "prep": 4.3,
+    "mmproj": 820.9,
+    "fpn": 196.6,
+    "radio": 894.8,
+    "hfre": 32.8,
+    "proj": 22.6,
+    "prefill": 5539.4,
+    "decode_tps": 6.36,
+    "dev_mem_gib": 0.0,
+    "TTFT": 7511.4
+  },
+  "cuda_f16": {
+    "prep": 3.9,
+    "mmproj": 20.4,
+    "fpn": 4.6,
+    "radio": 20.2,
+    "hfre": 23.5,
+    "proj": 7.0,
+    "prefill": 77.1,
+    "decode_tps": 54.57,
+    "dev_mem_gib": 15.5,
+    "TTFT": 156.7
+  },
+  "cuda_q8_0": {
+    "prep": 3.9,
+    "mmproj": 15.4,
+    "fpn": 2.7,
+    "radio": 15.6,
+    "hfre": 23.3,
+    "proj": 4.0,
+    "prefill": 46.3,
+    "decode_tps": 93.21,
+    "dev_mem_gib": 8.6,
+    "TTFT": 111.2
+  },
+  "python_cuda": {
+    "TTFT": 107.3,
+    "decode_tps": 43.95
+  },
+  "vulkan_f16": {
+    "prep": 4.1,
+    "mmproj": 19.6,
+    "fpn": 8.7,
+    "radio": 20.7,
+    "hfre": 34.7,
+    "proj": 11.6,
+    "prefill": 63.0,
+    "decode_tps": 52.72,
+    "dev_mem_gib": 15.8,
+    "TTFT": 162.4
+  },
+  "vulkan_q8_0": {
+    "prep": 4.1,
+    "mmproj": 20.0,
+    "fpn": 9.1,
+    "radio": 21.0,
+    "hfre": 32.4,
+    "proj": 6.8,
+    "prefill": 61.6,
+    "decode_tps": 90.6,
+    "dev_mem_gib": 8.8,
+    "TTFT": 155.0
+  }
+}

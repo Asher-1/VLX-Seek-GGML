@@ -1,0 +1,15 @@
+backend: CUDA0 (NVIDIA GeForce RTX 4090)
+[gguf] arch=wedetect n_kv=8 n_tensors=518
+[gguf] data section at 28000 (align 32)
+[time] wedetect: 100 proposals, graph 68.8 ms, total 161.2 ms
+[gguf] arch=vlxvision n_kv=35 n_tensors=708
+[gguf] data section at 46112 (align 32)
+[time] vision setup (gguf reads + parse): 751.8 ms
+[time] vision run 0 (cold): prep 6.9 | mmproj 129.1 | fpn 43.1 | radio 433.2 | hfre 41.0 | proj 14.4 | total 677.5 ms
+[time] vision run 1: prep 4.5 | mmproj 39.3 | fpn 22.4 | radio 43.3 | hfre 34.9 | proj 14.9 | total 166.1 ms
+[time] vision run 2: prep 4.5 | mmproj 34.3 | fpn 14.2 | radio 44.9 | hfre 40.2 | proj 14.6 | total 159.5 ms
+[time] vision run 3: prep 4.5 | mmproj 34.6 | fpn 22.4 | radio 42.5 | hfre 42.8 | proj 14.5 | total 169.0 ms
+[time] vision warm median of 3: prep 4.5 | mmproj 34.6 | fpn 22.4 | radio 43.3 | hfre 40.2 | proj 14.6 | total 166.1 ms
+[time] vision total: 1955.5 ms
+................................................................................
+[time] llm load 2325.6 ms | prefill 484 tok 69.7 ms | decode 29 tok 654.1 ms (42.81 tok/s) | total 5444.8 ms | dev-mem 15.5 GiB

@@ -1,0 +1,109 @@
+diff --git a/ggml/src/ggml-cuda/ggml-cuda.cu b/ggml/src/ggml-cuda/ggml-cuda.cu
+index 9fe618f85..92d930b72 100644
+--- a/ggml/src/ggml-cuda/ggml-cuda.cu
++++ b/ggml/src/ggml-cuda/ggml-cuda.cu
+@@ -1703,6 +1703,23 @@ static void ggml_cuda_mul_mat_cublas(ggml_backend_cuda_context & ctx, const ggml
+         }
+     }
+ 
++    // VLX: GGML_PREC_F32 on an F32 x F32 product requests IEEE fp32. The handle
++    // defaults to CUBLAS_TF32_TENSOR_OP_MATH (10-bit mantissa inputs), so drop to
++    // default math for this call and restore on every exit path.
++    struct vlx_cublas_math_guard {
++        cublasHandle_t h = nullptr;
++        ~vlx_cublas_math_guard() {
++            if (h) {
++                CUBLAS_CHECK(cublasSetMathMode(h, CUBLAS_TF32_TENSOR_OP_MATH));
++            }
++        }
++    } vlx_math_guard;
++    if (prec == GGML_PREC_F32 && src0->type == GGML_TYPE_F32 && src1->type == GGML_TYPE_F32 &&
++            compute_type == GGML_TYPE_F32) {
++        vlx_math_guard.h = ctx.cublas_handle();
++        CUBLAS_CHECK(cublasSetMathMode(vlx_math_guard.h, CUBLAS_DEFAULT_MATH));
++    }
++
+     constexpr size_t max_src0_convert_size = 512ull * 1024 * 1024;
+     const size_t src0_f32_size = ggml_nelements(src0) * sizeof(float);
+ 
+diff --git a/ggml/src/ggml-vulkan/ggml-vulkan-types.h b/ggml/src/ggml-vulkan/ggml-vulkan-types.h
+index 7794c6310..8a83f0cdc 100644
+--- a/ggml/src/ggml-vulkan/ggml-vulkan-types.h
++++ b/ggml/src/ggml-vulkan/ggml-vulkan-types.h
+@@ -259,10 +259,12 @@ struct vk_matmul_pipeline_key {
+     ggml_type type_b;
+     bool mul_mat_id;
+     bool f16acc;
++    // VLX: IEEE fp32 shared-memory/accumulate variant (GGML_PREC_F32 on F32 x F32)
++    bool fp32 = false;
+ 
+     bool operator<(const vk_matmul_pipeline_key & o) const {
+-        return std::tie(type_a, type_b, mul_mat_id, f16acc)
+-             < std::tie(o.type_a, o.type_b, o.mul_mat_id, o.f16acc);
++        return std::tie(type_a, type_b, mul_mat_id, f16acc, fp32)
++             < std::tie(o.type_a, o.type_b, o.mul_mat_id, o.f16acc, o.fp32);
+     }
+ };
+ 
+diff --git a/ggml/src/ggml-vulkan/ggml-vulkan.cpp b/ggml/src/ggml-vulkan/ggml-vulkan.cpp
+index 8357f01fe..fd741d8c7 100644
+--- a/ggml/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/ggml/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -2810,6 +2810,22 @@ void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+         }
+     }
+ 
++    // VLX: strict IEEE fp32 F32 x F32 matmul for GGML_PREC_F32. On fp16 devices
++    // matmul_f32_f32 stages tiles in float16 shared memory and coopmat2 dequantizes
++    // F32 A to f16, so the scalar fp32 shader is registered under its own key.
++    if (device->fp16) {
++        const uint32_t s_warptile_wm_f32 = device->subgroup_size == 8 ? 8 : 32;
++        const std::vector<vk_tile_config> tc_f32_strict = {
++            {{ subgroup_size_32, 32, 32, 16, s_warptile_wm_f32, 32, 2, 2, 2, 1, subgroup_size_8 }, {32, 32, 1}, 32},
++            {{ 128, 64, 64, 16, mm_warp_8, 32, 2, 4, 2, 1, mm_warp_8 }, {64, 64, 1}, 64},
++            {{ 128, 128, 128, 16, mm_warp_8 * 2, 64, 2, 4, 4, 1, mm_warp_8 }, {128, 128, 1}, 128},
++        };
++        spec_fn_t f32_spec = [&](const std::vector<uint32_t>& wt, bool a) { return ggml_vk_mul_mm_spec(wt, a); };
++        vk_matmul_pipeline_key key{GGML_TYPE_F32, GGML_TYPE_F32, false, false};
++        key.fp32 = true;
++        create_mm_pipelines(key, tc_f32_strict, "matmul_f32_f32_strict", matmul_f32_f32_fp32_len, matmul_f32_f32_fp32_data, sizeof(vk_mat_mat_push_constants), 3, f32_spec);
++    }
++
+     // Set up tile selector functions
+     if (device->coopmat2) {
+         device->matmul_tile_selector = [](uint32_t m, uint32_t n, uint32_t /*k*/, uint32_t shader_core_count,
+@@ -6004,6 +6020,12 @@ static bool ggml_vk_get_mul_mat_mat_f16acc(ggml_backend_vk_context * ctx, ggml_t
+ 
+ static const std::vector<vk_matmul_pipeline_pair>* ggml_vk_get_mul_mat_mat_pipeline_map(
+         ggml_backend_vk_context * ctx, ggml_type src0_type, ggml_type src1_type, ggml_prec prec, bool mul_mat_id = false) {
++    if (prec == GGML_PREC_F32 && src0_type == GGML_TYPE_F32 && src1_type == GGML_TYPE_F32 && !mul_mat_id) {
++        vk_matmul_pipeline_key skey{GGML_TYPE_F32, GGML_TYPE_F32, false, false};
++        skey.fp32 = true;
++        auto sit = ctx->device->pipeline_matmul.find(skey);
++        if (sit != ctx->device->pipeline_matmul.end() && !sit->second.empty()) return &sit->second;
++    }
+     bool f16acc = ggml_vk_get_mul_mat_mat_f16acc(ctx, src0_type, src1_type, prec);
+     vk_matmul_pipeline_key key{src0_type, src1_type, mul_mat_id, f16acc};
+     auto it = ctx->device->pipeline_matmul.find(key);
+@@ -6324,6 +6346,8 @@ static ggml_type ggml_vk_mul_mat_b_type(
+         return ggml_vk_get_mul_mat_mat_pipeline_map(ctx, src0_type, b, prec, mul_mat_id) != nullptr;
+     };
+     if (can_quantize_y && available(GGML_TYPE_Q8_1))             return GGML_TYPE_Q8_1;
++    if (prec == GGML_PREC_F32 && src0_type == GGML_TYPE_F32 && src1->type == GGML_TYPE_F32 &&
++        !mul_mat_id && available(GGML_TYPE_F32))                  return GGML_TYPE_F32;  // VLX strict fp32
+     if (prefer_f16_b   && available(f16_type))                   return f16_type;
+     if (ggml_vk_dim01_contiguous(src1) && available(src1->type)) return src1->type;
+     if (src1->type == GGML_TYPE_BF16 && available(GGML_TYPE_F32)) return GGML_TYPE_F32;
+@@ -6374,7 +6398,11 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
+         src1_uma = d_Qy != nullptr;
+     }
+ 
+-    const bool x_non_contig = (ctx->device->coopmat2 && src0->type == GGML_TYPE_F32) ||
++    // VLX: GGML_PREC_F32 F32 x F32 keeps A in fp32 (strict pipeline, no f16 dequant)
++    const bool vlx_strict_f32 = (ggml_prec)dst->op_params[0] == GGML_PREC_F32 &&
++                                src0->type == GGML_TYPE_F32 && src1->type == GGML_TYPE_F32 &&
++                                ggml_vk_get_mul_mat_mat_pipeline_map(ctx, GGML_TYPE_F32, GGML_TYPE_F32, GGML_PREC_F32) != nullptr;
++    const bool x_non_contig = (ctx->device->coopmat2 && src0->type == GGML_TYPE_F32 && !vlx_strict_f32) ||
+                               !ggml_vk_dim01_contiguous(src0);
+     // If src0 is BF16, try to use a BF16 x BF16 multiply
+     ggml_type f16_type = src0->type == GGML_TYPE_BF16 ? GGML_TYPE_BF16 : GGML_TYPE_F16;

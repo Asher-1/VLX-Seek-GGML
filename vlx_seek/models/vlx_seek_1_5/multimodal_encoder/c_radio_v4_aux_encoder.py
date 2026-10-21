@@ -96,13 +96,15 @@ class CRadioV4AuxEncoder(AbsVisionTower):
         target = radio.get_nearest_supported_resolution(h, w)
         if target.height == h and target.width == w:
             return image
+        # antialiased bilinear has no bf16 CPU kernel: upcast for the resize
+        out_dtype = image.dtype
         return torch.nn.functional.interpolate(
-            image,
+            image.float(),
             size=(target.height, target.width),
             mode='bilinear',
             align_corners=False,
             antialias=True,
-        )
+        ).to(out_dtype)
 
     def _forward_single(self, image):
         image = image.to(device=self.device, dtype=self.dtype)
